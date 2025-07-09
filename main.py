@@ -1,4 +1,10 @@
-from utils import fetch_weather_alerts, create_alert_report, display_alerts
+from utils import (
+    fetch_weather_alerts, 
+    create_alert_report, 
+    display_alerts, 
+    fetch_news_alerts, 
+    format_news_alerts_nicely
+)
 from colorama import Fore, Style, init
 
 init(autoreset=True)
@@ -32,9 +38,11 @@ def main():
             alert_log += f"\n{'-'*70}"
 
         elif choice == "2":
-            # Placeholder for future news alert function
-            print(f"{Fore.GREEN}📰 News Alerts feature coming soon!")
-            alert_log += "\n[News Alerts]\n📰 Feature not yet implemented.\n"
+            query = input("🔍 Enter topic (default: India): ").strip() or "India"
+            articles = fetch_news_alerts(query=query)
+            print(format_news_alerts_nicely(articles))
+            # report["News Alerts - " + query] = articles
+
 
         elif choice == "3":
             # Placeholder for future stock alert function

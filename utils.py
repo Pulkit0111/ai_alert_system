@@ -1,7 +1,7 @@
 import requests
 import os
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timedelta
 from colorama import Fore, Style, init
 
 init(autoreset=True)
@@ -9,6 +9,7 @@ init(autoreset=True)
 load_dotenv()
 
 weather_api_key = os.getenv("WEATHER_API_KEY")
+news_api_key = os.getenv("NEWS_API_KEY")
 
 def fetch_weather_alerts(location: str):
     url = (
@@ -49,3 +50,49 @@ def display_alerts(alerts):
         print(f"{Fore.CYAN}📅 To: {alert.get('expires', 'N/A')}")
         print(f"{Fore.WHITE}📝 Description:\n{alert.get('desc', 'No description provided.')[:400]}...")
         print(f"{Fore.MAGENTA}{'-'*70}")
+
+def fetch_news_alerts(query="India", language="en", max_results=5):
+    print("\n🗞️ Fetching News Alerts...")
+
+    if not news_api_key:
+        print("❌ NEWS_API_KEY is missing in environment variables.")
+        return []
+
+    url = "https://newsapi.org/v2/everything"
+
+    from_date = (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    params = {
+        "q": query,
+        "from": from_date,
+        "language": language,
+        "sortBy": "publishedAt",
+        "pageSize": max_results,
+        "apiKey": news_api_key,
+    }
+
+    try:
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+        articles = response.json().get("articles", [])
+        if not articles:
+            print("🔍 No relevant news found.")
+        return articles
+    except Exception as e:
+        print("❌ Failed to fetch news:", e)
+        return []
+
+def format_news_alerts_nicely(articles):
+    if not articles:
+        return "📭 No news alerts available."
+
+    output = "\n🗞️ Latest News Alerts\n" + "="*70 + "\n"
+    for idx, article in enumerate(articles, 1):
+        output += f"""📰 News #{idx}
+📅 Published: {article.get("publishedAt", "N/A")}
+🧾 Title: {article.get("title", "N/A")}
+📝 Description: {article.get("description", "N/A")}
+🔗 URL: {article.get("url", "N/A")}
+{"-"*70}
+"""
+    return output
