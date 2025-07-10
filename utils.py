@@ -1,7 +1,7 @@
 import requests
 import os
 from dotenv import load_dotenv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from colorama import Fore, Style, init
 
 init(autoreset=True)
@@ -51,28 +51,30 @@ def display_alerts(alerts):
         print(f"{Fore.WHITE}📝 Description:\n{alert.get('desc', 'No description provided.')[:400]}...")
         print(f"{Fore.MAGENTA}{'-'*70}")
 
-def fetch_news_alerts(query="India", language="en", max_results=5):
+def fetch_news_alerts(query="India", max_results=5):
     print("\n🗞️ Fetching News Alerts...")
 
     if not news_api_key:
         print("❌ NEWS_API_KEY is missing in environment variables.")
         return []
 
-    url = "https://newsapi.org/v2/everything"
+    base_url = "https://newsapi.org/v2/everything"
 
-    from_date = (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    from_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+    to_date = datetime.now().strftime("%Y-%m-%d")
 
     params = {
         "q": query,
         "from": from_date,
-        "language": language,
+        "to": to_date,
+        "language": "en",
         "sortBy": "publishedAt",
         "pageSize": max_results,
         "apiKey": news_api_key,
     }
 
     try:
-        response = requests.get(url, params=params)
+        response = requests.get(base_url, params=params)
         response.raise_for_status()
         articles = response.json().get("articles", [])
         if not articles:

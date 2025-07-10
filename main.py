@@ -15,9 +15,9 @@ def main():
     while True:
         print(f"\n{Fore.CYAN}📊 Real-Time Alert System - Choose an option:")
         print(f"{Fore.YELLOW}1. Weather Alerts")
-        print(f"2. News Feed Alerts")
-        print(f"3. Stock Price Alerts")
-        print(f"4. Exit")
+        print(f"{Fore.YELLOW}2. News Feed Alerts")
+        print(f"{Fore.YELLOW}3. Stock Price Alerts")
+        print(f"{Fore.YELLOW}4. Exit")
         print(f"{Style.RESET_ALL}{'-'*50}")
         
         choice = input(f"{Fore.BLUE}🧭 Your Choice: ").strip()
@@ -25,7 +25,6 @@ def main():
         if choice == "1":
             location = input("🗺️ Enter your location (default: Delhi): ").strip() or "Delhi"
             alerts = fetch_weather_alerts(location)
-            # print(f"\n{Fore.GREEN}{result}")
             display_alerts(alerts)
             alert_log += f"\n[Weather Alerts - {location}]"
             for i, alert in enumerate(alerts, 1):
@@ -41,8 +40,16 @@ def main():
             query = input("🔍 Enter topic (default: India): ").strip() or "India"
             articles = fetch_news_alerts(query=query)
             print(format_news_alerts_nicely(articles))
-            # report["News Alerts - " + query] = articles
-
+            alert_log += f"\n[News Alerts - {query}]"
+            for idx, article in enumerate(articles, 1):
+                alert_log += f"""
+                    \n📰 News #{idx}
+                    \n📅 Published: {article.get("publishedAt", "N/A")}
+                    \n🧾 Title: {article.get("title", "N/A")}
+                    \n📝 Description: {article.get("description", "N/A")}
+                    \n🔗 URL: {article.get("url", "N/A")}
+                """
+            alert_log += f"\n{'-'*70}"
 
         elif choice == "3":
             # Placeholder for future stock alert function
@@ -57,7 +64,7 @@ def main():
             break
 
         else:
-            print(f"{Fore.RED}❌ Invalid choice. Please select 1-4 or type 'exit'.")
+            print(f"{Fore.RED}❌ Invalid choice. Please select 1-4.")
 
 if __name__ == "__main__":
     main()
