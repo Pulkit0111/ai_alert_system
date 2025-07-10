@@ -7,6 +7,12 @@ from utils import (
     fetch_top_stock_alerts,
     format_stock_alerts_pretty
 )
+from agent_utils import (
+    get_latest_log_file,
+    read_log_file,
+    summarize_alert_log,
+    send_telegram_message
+)
 from colorama import Fore, Style, init
 
 init(autoreset=True)
@@ -72,6 +78,9 @@ def main():
             print(f"\n{Fore.YELLOW}📝 Generating final report...")
             path = create_alert_report(alert_log)
             print(f"{Fore.GREEN}✅ Report saved to: {path}")
+            log_content = read_log_file(path)
+            log_summary = summarize_alert_log(log_content)
+            send_telegram_message(log_summary)
             print(f"{Fore.CYAN}👋 Exiting. Stay safe and informed!\n")
             break
 
