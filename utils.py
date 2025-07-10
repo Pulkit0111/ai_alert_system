@@ -10,6 +10,9 @@ load_dotenv()
 
 weather_api_key = os.getenv("WEATHER_API_KEY")
 news_api_key = os.getenv("NEWS_API_KEY")
+tweleve_data_api_key = os.getenv("TWELVE_DATA_API_KEY")
+
+TOP_5_STOCKS = ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"]
 
 def fetch_weather_alerts(location: str):
     url = (
@@ -96,5 +99,70 @@ def format_news_alerts_nicely(articles):
 📝 Description: {article.get("description", "N/A")}
 🔗 URL: {article.get("url", "N/A")}
 {"-"*70}
+"""
+    return output
+
+def fetch_top_stock_alerts(threshold_percent=3.0):
+    print("\n📉 Checking Stock Price Alerts for Top 5 Stocks...")
+    if not tweleve_data_api_key:
+        print("❌ Missing TWELVE_DATA_API_KEY in your .env file.")
+        return {}
+
+    base_url = "https://api.twelvedata.com/time_series"
+    alerts = {}
+
+    for symbol in TOP_5_STOCKS:
+        params = {
+            "symbol": symbol,
+            "interval": "1day",
+            "outputsize": 2,
+            "apikey": tweleve_data_api_key
+        }
+
+        try:
+            response = requests.get(base_url, params=params)
+            response.raise_for_status()
+            data = response.json()
+
+            if "values" not in data:
+                print(f"⚠️ Failed to get data for {symbol}: {data.get('message', 'Unknown error')}")
+                continue
+
+            values = data["values"]
+            latest = float(values[0]["close"])
+            previous = float(values[1]["close"])
+            change = latest - previous
+            percent_change = (change / previous) * 100
+            alert_needed = abs(percent_change) >= threshold_percent
+
+            alerts[symbol] = {
+                "symbol": symbol,
+                "latest_close": latest,
+                "previous_close": previous,
+                "change": round(change, 2),
+                "percent_change": round(percent_change, 2),
+                "alert_needed": alert_needed
+            }
+
+        except Exception as e:
+            print(f"❌ Error fetching {symbol}: {e}")
+
+    return alerts
+
+def format_stock_alerts_pretty(alerts: dict) -> str:
+    if not alerts:
+        return "📭 No stock alerts available.\n"
+
+    output = "\n📈 Stock Price Alerts Summary"
+    output += "\n" + "=" * 65
+    for i, (symbol, data) in enumerate(alerts.items(), 1):
+        output += f"""
+🧾 {i}. {symbol}
+💵 Latest: ${data['latest_close']}
+📊 Previous: ${data['previous_close']}
+📉 Change: {data['change']} ({data['percent_change']}%)
+
+{"⚠️ Significant movement!" if data['alert_needed'] else "✅ Normal movement"}
+{"-" * 65}
 """
     return output

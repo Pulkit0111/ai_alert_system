@@ -3,7 +3,9 @@ from utils import (
     create_alert_report, 
     display_alerts, 
     fetch_news_alerts, 
-    format_news_alerts_nicely
+    format_news_alerts_nicely,
+    fetch_top_stock_alerts,
+    format_stock_alerts_pretty
 )
 from colorama import Fore, Style, init
 
@@ -52,9 +54,19 @@ def main():
             alert_log += f"\n{'-'*70}"
 
         elif choice == "3":
-            # Placeholder for future stock alert function
-            print(f"{Fore.GREEN}📈 Stock Alerts feature coming soon!")
-            alert_log += "\n[Stock Alerts]\n📉 Feature not yet implemented.\n"
+            alerts = fetch_top_stock_alerts()
+            print(format_stock_alerts_pretty(alerts))
+            alert_log += f"\n📈 Stock Price Alerts Summary"
+            for i, (symbol, data) in enumerate(alerts.items(), 1):
+                alert_log += f"""
+                    \n🧾 {i}. {symbol}
+                    \n💵 Latest: ${data['latest_close']}
+                    \n📊 Previous: ${data['previous_close']}
+                    \n📉 Change: {data['change']} ({data['percent_change']}%)
+                    \n{"⚠️ Significant movement!" if data['alert_needed'] else "✅ Normal movement"}
+                """
+            alert_log += f"\n{'-'*65}"
+            
 
         elif choice.lower() == "4":
             print(f"\n{Fore.YELLOW}📝 Generating final report...")
