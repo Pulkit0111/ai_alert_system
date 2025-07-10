@@ -8,21 +8,6 @@ load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def get_latest_log_file(log_dir="logs"):
-    """Finds the most recently created alert log file."""
-    if not os.path.exists(log_dir):
-        return None
-
-    files = [
-        f for f in os.listdir(log_dir)
-        if f.startswith("alert_summary_") and f.endswith(".txt")
-    ]
-    if not files:
-        return None
-
-    files.sort(reverse=True)  # Latest first
-    return os.path.join(log_dir, files[0])
-
 def read_log_file(file_path):
     """Reads the content of a given log file."""
     if not file_path or not os.path.exists(file_path):
@@ -92,12 +77,4 @@ def send_telegram_message(message: str):
             print("❌ Failed to send Telegram message:", response.text)
     except Exception as e:
         print("❌ Error:", e)
-
-path = get_latest_log_file()
-
-content = read_log_file(path)
-
-summary = summarize_alert_log(content)
-
-send_telegram_message(summary)
 
