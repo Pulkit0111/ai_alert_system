@@ -1,8 +1,8 @@
 import requests
 import os
 from dotenv import load_dotenv
-from datetime import datetime, timedelta, timezone
-from colorama import Fore, Style, init
+from datetime import datetime, timedelta
+from colorama import Fore, init
 
 init(autoreset=True)
 
