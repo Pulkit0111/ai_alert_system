@@ -1,0 +1,37 @@
+# 🚨 Real-Time Alert System - Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core API Communication
+requests>=2.32.4
+
+# Environment Variables Management
+python-dotenv>=1.1.1
+
+# Terminal Color Output
+colorama>=0.4.6
+
+# OpenAI API Integration
+openai>=1.94.0
+
+# ===============================================
+# 📦 INSTALLATION INSTRUCTIONS:
+# ===============================================
+# 1. Create virtual environment:
+#    python -m venv .venv
+#    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+#
+# 2. Install dependencies:
+#    pip install -r requirements.txt
+#
+# 3. Verify installation:
+#    pip list
+#
+# ===============================================
+# 🔄 ALTERNATIVE INSTALLATION:
+# ===============================================
+# If you prefer using uv (faster):
+# 1. Install uv: pip install uv
+# 2. Install dependencies: uv pip install -r requirements.txt
+#
+# If you prefer using the pyproject.toml:
+# 1. Install project: pip install -e . 
